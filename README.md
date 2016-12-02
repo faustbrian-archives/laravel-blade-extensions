@@ -11,9 +11,7 @@ $ composer require faustbrian/laravel-blade-extensions
 Add the service provider to `config/app.php` in the `providers` array.
 
 ``` php
-'providers' => [
-    BrianFaust\Blade\BladeServiceProvider::class
-];
+BrianFaust\Blade\BladeServiceProvider::class
 ```
 
 ## Security
