@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace BrianFaust\Blade;
 
 use Illuminate\Support\Facades\Blade;
@@ -19,7 +21,7 @@ class BladeServiceProvider extends ServiceProvider
     /**
      * Bootstrap the application services.
      */
-    public function boot()
+    public function boot(): void
     {
         $this->registerExtensions();
         $this->registerDirectives();
