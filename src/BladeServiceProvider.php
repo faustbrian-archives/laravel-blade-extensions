@@ -30,7 +30,7 @@ class BladeServiceProvider extends ServiceProvider
     /**
      * Register "Blade::extend" calls.
      */
-    private function registerExtensions()
+    private function registerExtensions(): void
     {
         /*
          * php switch statement.
@@ -50,7 +50,7 @@ class BladeServiceProvider extends ServiceProvider
     /**
      * Register "Blade::directive" calls.
      */
-    private function registerDirectives()
+    private function registerDirectives(): void
     {
         /*
          * php json_encode() function.
@@ -401,7 +401,7 @@ class BladeServiceProvider extends ServiceProvider
      *
      * @return array
      */
-    private function getArguments($expression)
+    private function getArguments($expression): array
     {
         return explode(', ', str_replace(['(', ')'], '', $expression));
     }
