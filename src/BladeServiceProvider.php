@@ -401,6 +401,17 @@ class BladeServiceProvider extends ServiceProvider
 
             return "<?php echo('<i class=\"fa fa-{$icon}\"></i>'); ?>";
         });
+
+        /*
+         * Carbon helper function.
+         *
+         * Usage: @carbon($value, $format)
+         */
+        Blade::directive('carbon', function ($expression) {
+            list($value, $format) = $this->getArguments($expression);
+
+            return "<?php echo((new Carbon\Carbon({$value}))->format($format)); ?>";
+        });
     }
 
     /**
