@@ -76,7 +76,7 @@ class BladeServiceProvider extends ServiceProvider
              * Usage: @auth() ... @endauth
              */
             $bladeCompiler->directive('auth', function () {
-                return "<?php if(auth()->check()): ?>";
+                return '<?php if(auth()->check()): ?>';
             });
             $bladeCompiler->directive('endauth', function () {
                 return '<?php endif; ?>';
@@ -88,7 +88,7 @@ class BladeServiceProvider extends ServiceProvider
              * Usage: @guest() ... @endguest
              */
             $bladeCompiler->directive('guest', function () {
-                return "<?php if(auth()->guest()): ?>";
+                return '<?php if(auth()->guest()): ?>';
             });
             $bladeCompiler->directive('endguest', function () {
                 return '<?php endif; ?>';
