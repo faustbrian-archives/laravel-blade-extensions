@@ -24,6 +24,7 @@ namespace BrianFaust\Blade;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\View\Compilers\BladeCompiler;
 
 class BladeServiceProvider extends ServiceProvider
 {
@@ -33,6 +34,13 @@ class BladeServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerExtensions();
+    }
+
+    /**
+     * Register the application services.
+     */
+    public function register()
+    {
         $this->registerDirectives();
     }
 
@@ -61,356 +69,382 @@ class BladeServiceProvider extends ServiceProvider
      */
     private function registerDirectives(): void
     {
-        /*
-         * php json_encode() function.
-         *
-         * Usage: @json_encode($value)
-         */
-        Blade::directive('json', function ($expression) {
-            return "<?php echo(json_encode($expression)); ?>";
-        });
+        $this->app->afterResolving('blade.compiler', function (BladeCompiler $bladeCompiler) {
+            /*
+             * Auth helper function.
+             *
+             * Usage: @auth() ... @endauth
+             */
+            $bladeCompiler->directive('auth', function () {
+                return "<?php if(auth()->check()): ?>";
+            });
+            $bladeCompiler->directive('endauth', function () {
+                return '<?php endif; ?>';
+            });
 
-        /*
-         * php explode() function.
-         *
-         * Usage: @explode($delimiter, $string)
-         */
-        Blade::directive('explode', function ($expression) {
-            list($delimiter, $string) = $this->getArguments($expression);
+            /*
+             * Guest helper function.
+             *
+             * Usage: @guest() ... @endguest
+             */
+            $bladeCompiler->directive('guest', function () {
+                return "<?php if(auth()->guest()): ?>";
+            });
+            $bladeCompiler->directive('endguest', function () {
+                return '<?php endif; ?>';
+            });
 
-            return "<?php explode({$delimiter}, {$string}); ?>";
-        });
+            /*
+             * php json_encode() function.
+             *
+             * Usage: @json_encode($value)
+             */
+            $bladeCompiler->directive('json', function ($expression) {
+                return "<?php echo(json_encode($expression)); ?>";
+            });
 
-        /*
-         * php implode() function.
-         *
-         * Usage: @implode($delimiter, $string)
-         */
-        Blade::directive('implode', function ($expression) {
-            list($delimiter, $array) = $this->getArguments($expression);
+            /*
+             * php explode() function.
+             *
+             * Usage: @explode($delimiter, $string)
+             */
+            $bladeCompiler->directive('explode', function ($expression) {
+                list($delimiter, $string) = $this->getArguments($expression);
 
-            return "<?php echo(implode({$delimiter}, {$array})); ?>";
-        });
+                return "<?php explode({$delimiter}, {$string}); ?>";
+            });
 
-        /*
-         * php var_dump() function.
-         *
-         * Usage: @var_dump($value)
-         */
-        Blade::directive('var_dump', function ($expression) {
-            return "<?php var_dump({$expression}); ?>";
-        });
+            /*
+             * php implode() function.
+             *
+             * Usage: @implode($delimiter, $string)
+             */
+            $bladeCompiler->directive('implode', function ($expression) {
+                list($delimiter, $array) = $this->getArguments($expression);
 
-        /*
-         * Set variable.
-         *
-         * Usage: @set($name, value)
-         */
-        Blade::directive('set', function ($expression) {
-            list($name, $value) = $this->getArguments($expression);
+                return "<?php echo(implode({$delimiter}, {$array})); ?>";
+            });
 
-            return "<?php {$name} = {$value}; ?>";
-        });
+            /*
+             * php var_dump() function.
+             *
+             * Usage: @var_dump($value)
+             */
+            $bladeCompiler->directive('var_dump', function ($expression) {
+                return "<?php var_dump({$expression}); ?>";
+            });
 
-        /*
-         * Laravel dd() function.
-         *
-         * Usage: @dd($value)
-         */
-        Blade::directive('dd', function ($expression) {
-            return "<?php dd({$expression}); ?>";
-        });
+            /*
+             * Set variable.
+             *
+             * Usage: @set($name, value)
+             */
+            $bladeCompiler->directive('set', function ($expression) {
+                list($name, $value) = $this->getArguments($expression);
 
-        /*
-         * Laravel camel_case() function.
-         *
-         * Usage: @camel_case($value)
-         */
-        Blade::directive('camel_case', function ($expression) {
-            return "<?php echo(camel_case({$expression})); ?>";
-        });
+                return "<?php {$name} = {$value}; ?>";
+            });
 
-        /*
-         * Laravel class_basename() function.
-         *
-         * Usage: @class_basename($value)
-         */
-        Blade::directive('class_basename', function ($expression) {
-            return "<?php echo(class_basename({$expression})); ?>";
-        });
+            /*
+             * Laravel dd() function.
+             *
+             * Usage: @dd($value)
+             */
+            $bladeCompiler->directive('dd', function ($expression) {
+                return "<?php dd({$expression}); ?>";
+            });
 
-        /*
-         * Laravel e() function.
-         *
-         * Usage: @e($value)
-         */
-        Blade::directive('e', function ($expression) {
-            return "<?php echo(e({$expression})); ?>";
-        });
+            /*
+             * Laravel camel_case() function.
+             *
+             * Usage: @camel_case($value)
+             */
+            $bladeCompiler->directive('camel_case', function ($expression) {
+                return "<?php echo(camel_case({$expression})); ?>";
+            });
 
-        /*
-         * Laravel ends_with() function.
-         *
-         * Usage: @ends_with($haystack, $needles)
-         */
-        Blade::directive('ends_with', function ($expression) {
-            return "<?php echo(ends_with({$expression})); ?>";
-        });
+            /*
+             * Laravel class_basename() function.
+             *
+             * Usage: @class_basename($value)
+             */
+            $bladeCompiler->directive('class_basename', function ($expression) {
+                return "<?php echo(class_basename({$expression})); ?>";
+            });
 
-        /*
-         * Laravel snake_case() function.
-         *
-         * Usage: @snake_case($value)
-         */
-        Blade::directive('snake_case', function ($expression) {
-            return "<?php echo(snake_case({$expression})); ?>";
-        });
+            /*
+             * Laravel e() function.
+             *
+             * Usage: @e($value)
+             */
+            $bladeCompiler->directive('e', function ($expression) {
+                return "<?php echo(e({$expression})); ?>";
+            });
 
-        /*
-         * Laravel str_limit() function.
-         *
-         * Usage: @str_limit($value, $limit, $end)
-         */
-        Blade::directive('str_limit', function ($expression) {
-            return "<?php echo(str_limit({$expression})); ?>";
-        });
+            /*
+             * Laravel ends_with() function.
+             *
+             * Usage: @ends_with($haystack, $needles)
+             */
+            $bladeCompiler->directive('ends_with', function ($expression) {
+                return "<?php echo(ends_with({$expression})); ?>";
+            });
 
-        /*
-         * Laravel starts_with() function.
-         *
-         * Usage: @starts_with($haystack, $needles)
-         */
-        Blade::directive('starts_with', function ($expression) {
-            return "<?php echo(starts_with({$expression})); ?>";
-        });
+            /*
+             * Laravel snake_case() function.
+             *
+             * Usage: @snake_case($value)
+             */
+            $bladeCompiler->directive('snake_case', function ($expression) {
+                return "<?php echo(snake_case({$expression})); ?>";
+            });
 
-        /*
-         * Laravel str_contains() function.
-         *
-         * Usage: @str_contains($haystack, $needles)
-         */
-        Blade::directive('str_contains', function ($expression) {
-            return "<?php echo(str_contains({$expression})); ?>";
-        });
+            /*
+             * Laravel str_limit() function.
+             *
+             * Usage: @str_limit($value, $limit, $end)
+             */
+            $bladeCompiler->directive('str_limit', function ($expression) {
+                return "<?php echo(str_limit({$expression})); ?>";
+            });
 
-        /*
-         * Laravel str_finish() function.
-         *
-         * Usage: @str_finish($value, $cap)
-         */
-        Blade::directive('str_finish', function ($expression) {
-            return "<?php echo(str_finish({$expression})); ?>";
-        });
+            /*
+             * Laravel starts_with() function.
+             *
+             * Usage: @starts_with($haystack, $needles)
+             */
+            $bladeCompiler->directive('starts_with', function ($expression) {
+                return "<?php echo(starts_with({$expression})); ?>";
+            });
 
-        /*
-         * Laravel str_is() function.
-         *
-         * Usage: @str_is($pattern, $value)
-         */
-        Blade::directive('str_is', function ($expression) {
-            return "<?php echo(str_is({$expression})); ?>";
-        });
+            /*
+             * Laravel str_contains() function.
+             *
+             * Usage: @str_contains($haystack, $needles)
+             */
+            $bladeCompiler->directive('str_contains', function ($expression) {
+                return "<?php echo(str_contains({$expression})); ?>";
+            });
 
-        /*
-         * Laravel str_plural() function.
-         *
-         * Usage: @str_plural($value, $count)
-         */
-        Blade::directive('str_plural', function ($expression) {
-            return "<?php echo(str_plural({$expression})); ?>";
-        });
+            /*
+             * Laravel str_finish() function.
+             *
+             * Usage: @str_finish($value, $cap)
+             */
+            $bladeCompiler->directive('str_finish', function ($expression) {
+                return "<?php echo(str_finish({$expression})); ?>";
+            });
 
-        /*
-         * Laravel str_random() function.
-         *
-         * Usage: @str_random($length)
-         */
-        Blade::directive('str_random', function ($expression) {
-            return "<?php echo(str_random({$expression})); ?>";
-        });
+            /*
+             * Laravel str_is() function.
+             *
+             * Usage: @str_is($pattern, $value)
+             */
+            $bladeCompiler->directive('str_is', function ($expression) {
+                return "<?php echo(str_is({$expression})); ?>";
+            });
 
-        /*
-         * Laravel str_replace_first() function.
-         *
-         * Usage: @str_replace_first($search, $replace, $subject)
-         */
-        Blade::directive('str_replace_first', function ($expression) {
-            return "<?php echo(str_replace_first({$expression})); ?>";
-        });
+            /*
+             * Laravel str_plural() function.
+             *
+             * Usage: @str_plural($value, $count)
+             */
+            $bladeCompiler->directive('str_plural', function ($expression) {
+                return "<?php echo(str_plural({$expression})); ?>";
+            });
 
-        /*
-         * Laravel str_replace_last() function.
-         *
-         * Usage: @str_replace_last($search, $replace, $subject)
-         */
-        Blade::directive('str_replace_last', function ($expression) {
-            return "<?php echo(str_replace_last({$expression})); ?>";
-        });
+            /*
+             * Laravel str_random() function.
+             *
+             * Usage: @str_random($length)
+             */
+            $bladeCompiler->directive('str_random', function ($expression) {
+                return "<?php echo(str_random({$expression})); ?>";
+            });
 
-        /*
-         * Laravel str_singular() function.
-         *
-         * Usage: @str_singular($value)
-         */
-        Blade::directive('str_singular', function ($expression) {
-            return "<?php echo(str_singular({$expression})); ?>";
-        });
+            /*
+             * Laravel str_replace_first() function.
+             *
+             * Usage: @str_replace_first($search, $replace, $subject)
+             */
+            $bladeCompiler->directive('str_replace_first', function ($expression) {
+                return "<?php echo(str_replace_first({$expression})); ?>";
+            });
 
-        /*
-         * Laravel str_slug() function.
-         *
-         * Usage: @str_slug($title, $separator)
-         */
-        Blade::directive('str_slug', function ($expression) {
-            return "<?php echo(str_slug({$expression})); ?>";
-        });
+            /*
+             * Laravel str_replace_last() function.
+             *
+             * Usage: @str_replace_last($search, $replace, $subject)
+             */
+            $bladeCompiler->directive('str_replace_last', function ($expression) {
+                return "<?php echo(str_replace_last({$expression})); ?>";
+            });
 
-        /*
-         * Laravel studly_case() function.
-         *
-         * Usage: @studly_case($value)
-         */
-        Blade::directive('studly_case', function ($expression) {
-            return "<?php echo(studly_case({$expression})); ?>";
-        });
+            /*
+             * Laravel str_singular() function.
+             *
+             * Usage: @str_singular($value)
+             */
+            $bladeCompiler->directive('str_singular', function ($expression) {
+                return "<?php echo(str_singular({$expression})); ?>";
+            });
 
-        /*
-         * Laravel title_case() function.
-         *
-         * Usage: @title_case($value)
-         */
-        Blade::directive('title_case', function ($expression) {
-            return "<?php echo(title_case({$expression})); ?>";
-        });
+            /*
+             * Laravel str_slug() function.
+             *
+             * Usage: @str_slug($title, $separator)
+             */
+            $bladeCompiler->directive('str_slug', function ($expression) {
+                return "<?php echo(str_slug({$expression})); ?>";
+            });
 
-        /*
-         * Laravel action() function.
-         *
-         * Usage: @action($path, $secure)
-         */
-        Blade::directive('action', function ($expression) {
-            return "<?php echo(action({$expression})); ?>";
-        });
+            /*
+             * Laravel studly_case() function.
+             *
+             * Usage: @studly_case($value)
+             */
+            $bladeCompiler->directive('studly_case', function ($expression) {
+                return "<?php echo(studly_case({$expression})); ?>";
+            });
 
-        /*
-         * Laravel asset() function.
-         *
-         * Usage: @asset($path, $secure)
-         */
-        Blade::directive('asset', function ($expression) {
-            return "<?php echo(asset({$expression})); ?>";
-        });
+            /*
+             * Laravel title_case() function.
+             *
+             * Usage: @title_case($value)
+             */
+            $bladeCompiler->directive('title_case', function ($expression) {
+                return "<?php echo(title_case({$expression})); ?>";
+            });
 
-        /*
-         * Laravel secure_asset() function.
-         *
-         * Usage: @secure_asset($path)
-         */
-        Blade::directive('secure_asset', function ($expression) {
-            return "<?php echo(secure_asset({$expression})); ?>";
-        });
+            /*
+             * Laravel action() function.
+             *
+             * Usage: @action($path, $secure)
+             */
+            $bladeCompiler->directive('action', function ($expression) {
+                return "<?php echo(action({$expression})); ?>";
+            });
 
-        /*
-         * Laravel route() function.
-         *
-         * Usage: @route($path, $parameters, $absolute)
-         */
-        Blade::directive('route', function ($expression) {
-            return "<?php echo(route({$expression})); ?>";
-        });
+            /*
+             * Laravel asset() function.
+             *
+             * Usage: @asset($path, $secure)
+             */
+            $bladeCompiler->directive('asset', function ($expression) {
+                return "<?php echo(asset({$expression})); ?>";
+            });
 
-        /*
-         * Laravel secure_url() function.
-         *
-         * Usage: @secure_url($path, $parameters)
-         */
-        Blade::directive('secure_url', function ($expression) {
-            return "<?php echo(secure_url({$expression})); ?>";
-        });
+            /*
+             * Laravel secure_asset() function.
+             *
+             * Usage: @secure_asset($path)
+             */
+            $bladeCompiler->directive('secure_asset', function ($expression) {
+                return "<?php echo(secure_asset({$expression})); ?>";
+            });
 
-        /*
-         * Laravel url() function.
-         *
-         * Usage: @url($path, $parameters)
-         */
-        Blade::directive('url', function ($expression) {
-            return "<?php echo(url({$expression})); ?>";
-        });
+            /*
+             * Laravel route() function.
+             *
+             * Usage: @route($path, $parameters, $absolute)
+             */
+            $bladeCompiler->directive('route', function ($expression) {
+                return "<?php echo(route({$expression})); ?>";
+            });
 
-        /*
-         * Laravel abort() function.
-         *
-         * Usage: @abort($code, $message, $headers)
-         */
-        Blade::directive('abort', function ($expression) {
-            return "<?php abort({$expression}); ?>";
-        });
+            /*
+             * Laravel secure_url() function.
+             *
+             * Usage: @secure_url($path, $parameters)
+             */
+            $bladeCompiler->directive('secure_url', function ($expression) {
+                return "<?php echo(secure_url({$expression})); ?>";
+            });
 
-        /*
-         * Laravel abort_if() function.
-         *
-         * Usage: @abort_if($boolean, $code, $message, $headers)
-         */
-        Blade::directive('abort_if', function ($expression) {
-            return "<?php abort_if({$expression}); ?>";
-        });
+            /*
+             * Laravel url() function.
+             *
+             * Usage: @url($path, $parameters)
+             */
+            $bladeCompiler->directive('url', function ($expression) {
+                return "<?php echo(url({$expression})); ?>";
+            });
 
-        /*
-         * Laravel abort_unless() function.
-         *
-         * Usage: @abort_unless($boolean, $code, $message, $headers)
-         */
-        Blade::directive('abort_unless', function ($expression) {
-            return "<?php abort_unless({$expression}); ?>";
-        });
+            /*
+             * Laravel abort() function.
+             *
+             * Usage: @abort($code, $message, $headers)
+             */
+            $bladeCompiler->directive('abort', function ($expression) {
+                return "<?php abort({$expression}); ?>";
+            });
 
-        /*
-         * Laravel method_field() function.
-         *
-         * Usage: @method_field($method)
-         */
-        Blade::directive('method_field', function ($expression) {
-            return "<?php echo(method_field({$expression})); ?>";
-        });
+            /*
+             * Laravel abort_if() function.
+             *
+             * Usage: @abort_if($boolean, $code, $message, $headers)
+             */
+            $bladeCompiler->directive('abort_if', function ($expression) {
+                return "<?php abort_if({$expression}); ?>";
+            });
 
-        /*
-         * Laravel env() function.
-         *
-         * Usage: @env($key, $default)
-         */
-        Blade::directive('env', function ($expression) {
-            return "<?php echo(env({$expression})); ?>";
-        });
+            /*
+             * Laravel abort_unless() function.
+             *
+             * Usage: @abort_unless($boolean, $code, $message, $headers)
+             */
+            $bladeCompiler->directive('abort_unless', function ($expression) {
+                return "<?php abort_unless({$expression}); ?>";
+            });
 
-        /*
-         * Laravel bcrypt() function.
-         *
-         * Usage: @bcrypt($key, $options)
-         */
-        Blade::directive('bcrypt', function ($expression) {
-            return "<?php echo(bcrypt({$expression})); ?>";
-        });
+            /*
+             * Laravel method_field() function.
+             *
+             * Usage: @method_field($method)
+             */
+            $bladeCompiler->directive('method_field', function ($expression) {
+                return "<?php echo(method_field({$expression})); ?>";
+            });
 
-        /*
-         * Font Awesome helper function.
-         *
-         * Usage: @title_case($value)
-         */
-        Blade::directive('icon', function ($expression) {
-            $icon = substr($expression, 1, -1);
+            /*
+             * Laravel env() function.
+             *
+             * Usage: @env($key, $default)
+             */
+            $bladeCompiler->directive('env', function ($expression) {
+                return "<?php echo(env({$expression})); ?>";
+            });
 
-            return "<?php echo('<i class=\"fa fa-{$icon}\"></i>'); ?>";
-        });
+            /*
+             * Laravel bcrypt() function.
+             *
+             * Usage: @bcrypt($key, $options)
+             */
+            $bladeCompiler->directive('bcrypt', function ($expression) {
+                return "<?php echo(bcrypt({$expression})); ?>";
+            });
 
-        /*
-         * Carbon helper function.
-         *
-         * Usage: @carbon($value, $format)
-         */
-        Blade::directive('carbon', function ($expression) {
-            list($value, $format) = $this->getArguments($expression);
+            /*
+             * Font Awesome helper function.
+             *
+             * Usage: @title_case($value)
+             */
+            $bladeCompiler->directive('icon', function ($expression) {
+                $icon = substr($expression, 1, -1);
 
-            return "<?php echo((new Carbon\Carbon({$value}))->format($format)); ?>";
+                return "<?php echo('<i class=\"fa fa-{$icon}\"></i>'); ?>";
+            });
+
+            /*
+             * Carbon helper function.
+             *
+             * Usage: @carbon($value, $format)
+             */
+            $bladeCompiler->directive('carbon', function ($expression) {
+                list($value, $format) = $this->getArguments($expression);
+
+                return "<?php echo((new Carbon\Carbon({$value}))->format($format)); ?>";
+            });
         });
     }
 
