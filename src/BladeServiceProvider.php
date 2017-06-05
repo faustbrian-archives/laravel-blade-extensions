@@ -1,8 +1,5 @@
 <?php
 
-
-declare(strict_types=1);
-
 /*
  * This file is part of Laravel Blade Extensions.
  *
@@ -23,7 +20,7 @@ class BladeServiceProvider extends ServiceProvider
     /**
      * Bootstrap the application services.
      */
-    public function boot(): void
+    public function boot()
     {
         $this->registerExtensions();
     }
@@ -39,7 +36,7 @@ class BladeServiceProvider extends ServiceProvider
     /**
      * Register "Blade::extend" calls.
      */
-    private function registerExtensions(): void
+    private function registerExtensions()
     {
         /*
          * php switch statement.
@@ -59,7 +56,7 @@ class BladeServiceProvider extends ServiceProvider
     /**
      * Register "Blade::directive" calls.
      */
-    private function registerDirectives(): void
+    private function registerDirectives()
     {
         $this->app->afterResolving('blade.compiler', function (BladeCompiler $bladeCompiler) {
             /*

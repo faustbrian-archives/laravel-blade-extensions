@@ -10,25 +10,11 @@ Require this package, with [Composer](https://getcomposer.org/), in the root dir
 $ composer require faustbrian/laravel-blade-extensions
 ```
 
-Add the service provider to `config/app.php` in the `providers` array.
-
-``` php
-BrianFaust\Blade\BladeServiceProvider::class
-```
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
-
 ## Testing
 
 ``` bash
 $ phpunit
 ```
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Security
 
