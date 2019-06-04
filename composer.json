@@ -1,12 +1,12 @@
 {
-    "name": "faustbrian/laravel-blade-extensions",
+    "name": "artisanry/blade-extensions",
     "description": "Extensions and Directives for Laravel Blade",
-    "keywords": ["laravel", "framework", "Laravel-Blade-Extensions", "Laravel Blade Extensions", "Brian Faust", "faustbrian"],
+    "keywords": ["laravel", "framework", "Laravel-Blade-Extensions", "Laravel Blade Extensions"],
     "license": "MIT",
     "authors": [{
         "name": "Brian Faust",
-        "email": "hello@brianfaust.me",
-        "homepage": "https://brianfaust.me"
+        "email": "hello@basecode.sh",
+        "homepage": "https://basecode.sh"
     }],
     "require": {
         "php": "^7.1",
@@ -20,12 +20,12 @@
     },
     "autoload": {
         "psr-4": {
-            "BrianFaust\\Blade\\": "src"
+            "Artisanry\\Blade\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "BrianFaust\\Tests\\Blade\\": "tests"
+            "Artisanry\\Tests\\Blade\\": "tests"
         }
     },
     "config": {
@@ -38,7 +38,7 @@
         },
         "laravel": {
             "providers": [
-                "BrianFaust\\Blade\\BladeServiceProvider"
+                "Artisanry\\Blade\\BladeServiceProvider"
             ]
         }
     },
